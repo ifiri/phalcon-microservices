@@ -1,0 +1,14 @@
+{{ get_doctype() }}
+<html>
+    <head>
+        {{ get_title() }}
+
+        <?php $this->assets->outputCss(); ?>
+    </head>
+
+    <body>
+        {{ content() }} 
+
+        <?php $this->assets->outputJs(); ?>
+    </body>
+</html>
