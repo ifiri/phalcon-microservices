@@ -1,1 +1,0 @@
-<h1 style="text-align: center;margin-top: 25vh">Internal Server Error</h1>

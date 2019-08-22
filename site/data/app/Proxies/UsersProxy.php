@@ -6,10 +6,15 @@ use App\Data\Representations as DataRepresentations;
 use App\Exceptions;
 use App\Contracts;
 
-use Phalcon\Config;
-use Phalcon\Di;
+use Phalcon\{
+    Config, Di
+};
+
 use GuzzleHttp;
 
+/**
+ * This class encapsulate requests to the Users microservice.
+ */
 class UsersProxy implements Contracts\Proxy
 {
     private $url;
@@ -23,28 +28,45 @@ class UsersProxy implements Contracts\Proxy
         $this->url .= '/' . 'api/user/exists';
     }
 
-    public function isUserExistsBy(array $credentials)
+    /**
+     * This method calls Users microservice and asks,
+     * exists user with provided creds or not.
+     * 
+     * Credentials should be presented as array with
+     * two keys: `login` and `password`.
+     * 
+     * @param array $credentials 
+     * @return bool
+     */
+    public function isUserExistsBy(array $credentials): bool
     {
         $this->checkProvidedCredentials($credentials);
 
-        $client = new GuzzleHttp\Client;
+        $Client = new GuzzleHttp\Client();
         
-        $jsonRpcRequest = $this->getJsonRpcPresentedRequestFrom([
+        $jsonRpcRequestData = $this->getJsonRpcPresentedRequestFrom([
             'login' => $credentials['login'],
             'password' => $credentials['password'],
         ], 'is-user-exists');
         
-        $response = $client->request('POST', $this->url, [
-            'json' => $jsonRpcRequest,
+        $Response = $Client->request('POST', $this->url, [
+            'json' => $jsonRpcRequestData,
         ]);
 
-        if($response && $response->getStatusCode() === 200) {
+        if($Response && $Response->getStatusCode() === 200) {
             return true;
         }
 
         return false;
     }
 
+    /**
+     * Checks if provided credentials has `login` and `password keys.
+     * If required keys aren't presented, throws an exception.
+     * 
+     * @param array $credentials 
+     * @return void
+     */
     private function checkProvidedCredentials(array $credentials)
     {
         if(!isset($credentials['login']) || !isset($credentials['password'])) {
@@ -52,6 +74,14 @@ class UsersProxy implements Contracts\Proxy
         }
     }
 
+    /**
+     * Creates and returns new json-rpc formatted array
+     * from provided data and method.
+     * 
+     * @param array $data 
+     * @param string $method 
+     * @return array
+     */
     private function getJsonRpcPresentedRequestFrom(array $data, string $method)
     {
         $JsonRpc = new DataRepresentations\JsonRpcRepresentation($data, $method);

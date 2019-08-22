@@ -4,8 +4,17 @@ namespace App\Controllers;
 
 use Phalcon\Mvc\Controller;
 
+/**
+ * Root controller serves index page and cases when something
+ * not found or resulted with error.
+ */
 class RootController extends Controller
 {
+    /**
+     * Handler for index page of this service.
+     * 
+     * @return Phalcon\Http\Response
+     */
     public function index()
     {
         $this->tag->setTitle('Forbidden');
@@ -15,6 +24,11 @@ class RootController extends Controller
         return $this->response;
     }
 
+    /**
+     * Handler for cases when some page was not found.
+     * 
+     * @return Phalcon\Http\Response
+     */
     public function notFound()
     {
         $this->tag->setTitle('Nothing Found');
@@ -29,6 +43,11 @@ class RootController extends Controller
         return $this->response;
     }
 
+    /**
+     * Handler for cases when some exception was thrown.
+     * 
+     * @return Phalcon\Http\Response
+     */
     public function error($exception)
     {
         $this->tag->setTitle('Unexpected Error');

@@ -1,1 +1,0 @@
-<h1 style="text-align: center;margin-top: 25vh">Nothing Found</h1>

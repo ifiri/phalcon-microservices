@@ -2,30 +2,54 @@
 
 namespace App\Core\Application\Builder;
 
-use App\Contracts;
-use App\Core;
-use App;
 use App\Controllers;
-use App\Data;
+use App\Core;
+use App\Contracts;
 
-use Phalcon\Mvc;
-use Phalcon\Mvc\Micro\Collection as MicroCollection;
-use Phalcon\Di;
-use Phalcon\Config;
-use Phalcon\Db\Adapter\Pdo;
+use Phalcon\{
+    Di,
+    Mvc,
+    Config,
+    Db\Adapter\Pdo,
+    Mvc\Micro\Collection as MicroCollection
+};
 
+/**
+ * Builder for Micro Phalcon applications.
+ * Encapsulates itself logic of all steps which required
+ * for Micro application.
+ */
 class MicroBuilder implements Contracts\Builder\ApplicationBuilder
 {
+    private $Application;
+
+    /**
+     * In constructor, create an empty application
+     * which we will build.
+     * 
+     * @return void
+     */
     public function __construct()
     {
         $this->Application = new Mvc\Micro;
     }
 
+    /**
+     * Returns current product.
+     * 
+     * @return object
+     */
     public function getProduct()
     {
         return $this->Application;
     }
 
+    /**
+     * Builds Phalcon DI and binds it with app.
+     * Also creates aliases of Config, repositories, database, etc.
+     * 
+     * @return void
+     */
     public function buildDependencies()
     {
         $di = new Di\FactoryDefault;
@@ -52,6 +76,13 @@ class MicroBuilder implements Contracts\Builder\ApplicationBuilder
         $this->Application->setDI($di);
     }
 
+    /**
+     * Sets up routing. Gets all routes which should be served
+     * from the config and register controllers in application
+     * via MicroCollection.
+     * 
+     * @return void
+     */
     public function buildRouting()
     {
         $config = $this->Application->di->get('config')->routing;
@@ -60,16 +91,6 @@ class MicroBuilder implements Contracts\Builder\ApplicationBuilder
             try {
                 $Collection = $this->buildRoutesCollection($collectionParams);
 
-                if($Collection->getHandler() instanceof Controllers\RootController) {
-                    $this->Application->notFound([
-                        $Collection->getHandler(), 'notFound'
-                    ]);
-
-                    $this->Application->error([
-                        $Collection->getHandler(), 'error'
-                    ]);
-                }
-
                 $this->Application->mount($Collection);
             } catch (\Exception $Exception) {
                 throw $Exception;
@@ -77,6 +98,13 @@ class MicroBuilder implements Contracts\Builder\ApplicationBuilder
         }
     }
 
+    /**
+     * Adds support for views. Register in Application instance
+     * callback which will be called every time when Micro App
+     * requests a view.
+     * 
+     * @return void
+     */
     public function buildViews()
     {
         $config = $this->Application->di->get('config');
@@ -96,6 +124,14 @@ class MicroBuilder implements Contracts\Builder\ApplicationBuilder
         };
     }
 
+    /**
+     * Helper method. Accept parameters of creating collection 
+     * from the config, then creates new MicroCollection instance,
+     * then sets it up and returns.
+     * 
+     * @param Config $collectionParams 
+     * @return MicroCollection
+     */
     private function buildRoutesCollection(Config $collectionParams)
     {
         $handlerCallable = $collectionParams->get('handler');

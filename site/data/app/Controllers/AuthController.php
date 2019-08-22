@@ -2,13 +2,20 @@
 
 namespace App\Controllers;
 
-use App;
 use App\Core;
 
 use Phalcon\Mvc\Controller;
 
+/**
+ * This conreoller serves `auth`-scoped endpoints.
+ */
 class AuthController extends Controller
 {
+    /**
+     * Handler for `Sign In` page.
+     * 
+     * @return Phalcon\Http\Response
+     */
     public function signin()
     {
         $AssetsRepository = $this->di->get('assets/repository');

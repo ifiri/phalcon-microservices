@@ -13,18 +13,42 @@ use Phalcon\Mvc\Micro\Collection as MicroCollection;
 use Phalcon\Di;
 use Phalcon\Config;
 
+/**
+ * Builder for Micro Phalcon applications.
+ * Encapsulates itself logic of all steps which required
+ * for Micro application.
+ */
 class MicroBuilder implements Contracts\Builder\ApplicationBuilder
 {
+    private $Application;
+
+    /**
+     * In constructor, create an empty application
+     * which we will build.
+     * 
+     * @return void
+     */
     public function __construct()
     {
         $this->Application = new Mvc\Micro;
     }
 
-    public function getProduct()
+    /**
+     * Returns current product.
+     * 
+     * @return object
+     */
+    public function getProduct(): object
     {
         return $this->Application;
     }
 
+    /**
+     * Builds Phalcon DI and binds it with app.
+     * Also creates aliases of Config, repositories, etc.
+     * 
+     * @return void
+     */
     public function buildDependencies()
     {
         $di = new Di\FactoryDefault;
@@ -46,6 +70,13 @@ class MicroBuilder implements Contracts\Builder\ApplicationBuilder
         $this->Application->setDI($di);
     }
 
+    /**
+     * Sets up routing. Gets all routes which should be served
+     * from the config and register controllers in application
+     * via MicroCollection.
+     * 
+     * @return void
+     */
     public function buildRouting()
     {
         $config = $this->Application->di->get('config')->routing;
@@ -71,6 +102,13 @@ class MicroBuilder implements Contracts\Builder\ApplicationBuilder
         }
     }
 
+    /**
+     * Adds support for views. Register in Application instance
+     * callback which will be called every time when Micro App
+     * requests a view.
+     * 
+     * @return void
+     */
     public function buildViews()
     {
         $config = $this->Application->di->get('config');
@@ -90,7 +128,15 @@ class MicroBuilder implements Contracts\Builder\ApplicationBuilder
         };
     }
 
-    private function buildRoutesCollection(Config $collectionParams)
+    /**
+     * Helper method. Accept parameters of creating collection 
+     * from the config, then creates new MicroCollection instance,
+     * then sets it up and returns.
+     * 
+     * @param Config $collectionParams 
+     * @return MicroCollection
+     */
+    private function buildRoutesCollection(Config $collectionParams): MicroCollection
     {
         $handlerCallable = $collectionParams->get('handler');
         $collectionHandler = new $handlerCallable;

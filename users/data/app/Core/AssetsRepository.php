@@ -8,8 +8,8 @@ use Phalcon\Config;
 
 /**
  * Provides interface to getting resolved asset path.
- * It because it let encapsulate config structure
- * in one separate class. We should use it because
+ * This is because class lets encapsulate config structure
+ * in one separate class. We should use this class because
  * assets can be linked at multiple pages by
  * multiple controllers.
  */

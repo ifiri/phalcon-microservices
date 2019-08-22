@@ -4,11 +4,20 @@ namespace App\Data\Representations;
 
 use App\Contracts;
 
+/**
+ * Provides interface to create and retrieve JsonRpc formatted
+ * arrays from input data; and vice verca, original data from
+ * JsonRpc formatted arrays.
+ * 
+ * On input you can provide JsonRpc or original, not formatted array of data.
+ * In both of cases you will be able to get JsonRpc or non-formatted data.
+ */
 class JsonRpcRepresentation implements Contracts\DataRepresentation
 {
     private $data;
     private $method;
-    private $is_json_rpc = false;
+
+    private $isJsonRpc = false;
 
     private const PROTOCOL_VERSION = '2.0';
 
@@ -17,14 +26,21 @@ class JsonRpcRepresentation implements Contracts\DataRepresentation
         $this->data = $data;
         $this->method = $method;
 
-        if($this->isJsonRpc($data)) {
-            $this->is_json_rpc = true;
+        if($this->isDataJsonRpcFormatted()) {
+            $this->isJsonRpc = true;
         }
     }
 
+    /**
+     * Returns JsonRpc formatted array.
+     * As ID used md5 hash of serialazed data and method
+     * that combined by dot.
+     * 
+     * @return array
+     */
     public function getRepresentation()
     {
-        if($this->is_json_rpc) {
+        if($this->isJsonRpc) {
             return $this->data;
         }
 
@@ -38,17 +54,36 @@ class JsonRpcRepresentation implements Contracts\DataRepresentation
         ];
     }
 
+    /**
+     * Returns original, non-formatted data.
+     * If instance was created with formatted data,
+     * `params` field of JsonRpc array will be returned.
+     * Otherwise returns provided data.
+     * 
+     * @return array
+     */
     public function getOriginal()
     {
-        if($this->is_json_rpc) {
+        if($this->isJsonRpc) {
             return $this->data['params'];
         }
 
         return $this->data;
     }
 
-    private function isJsonRpc($data)
+    /**
+     * Checks if current `$data` is JsonRpc formatted array.
+     * 
+     * @return bool
+     */
+    private function isDataJsonRpcFormatted(): bool
     {
-        return isset($data['params']) && isset($data['id']) && isset($data['method']);
+        return (
+            isset($this->data['params'])
+            &&
+            isset($this-data['id'])
+            &&
+            isset($this->data['method'])
+        );
     }
 }
