@@ -31,7 +31,7 @@ class ApiController extends Controller
         $UsersProxy = new Proxies\UsersProxy($this->config);
 
         $credentials = $this->getCredentialsFrom($this->request);
-       
+
         // First of all, try to check, exists user or not
         try {
             if($UsersProxy->isUserExistsBy($credentials)) {
@@ -46,7 +46,7 @@ class ApiController extends Controller
                 $Response->getBody()->getContents()
             );
             
-            throw new Exceptions\ResponseException($decodedResponse->result);
+            return $this->makeResponse(500, $decodedResponse->result);
         } catch(\Exception $Exception) {
             return $this->makeResponse(500, $Exception->getMessage());
         }

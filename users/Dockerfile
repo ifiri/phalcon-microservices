@@ -26,7 +26,6 @@ COPY data /var/www/html
 
 RUN chmod -R 0777 /var/www/html/public 
 RUN chmod -R 0777 /var/www/html/resources 
-# RUN chmod -R +777 /var/www/html/vendor/phalcon 
 
 # cphalcon
 RUN curl -LO https://github.com/phalcon/cphalcon/archive/v${PHALCON_VERSION}.tar.gz \
@@ -37,7 +36,5 @@ RUN curl -LO https://github.com/phalcon/cphalcon/archive/v${PHALCON_VERSION}.tar
 RUN find . -type f -print0 | xargs -0 dos2unix
 RUN apt-get --purge remove -y dos2unix && rm -rf /var/lib/apt/lists/*
 
-# We should to add executable bash to the first parameter
-# RUN cd /var/www/html
+RUN cd /var/www/html
 RUN /var/www/html/vendor/phalcon/devtools/phalcon migration run --migrations=migrations
-# CMD ["", "", "run", "--migrations=migrations"]

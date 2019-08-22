@@ -48,7 +48,7 @@ class UsersProxy implements Contracts\Proxy
             'login' => $credentials['login'],
             'password' => $credentials['password'],
         ], 'is-user-exists');
-        
+
         $Response = $Client->request('POST', $this->url, [
             'json' => $jsonRpcRequestData,
         ]);

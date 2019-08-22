@@ -81,7 +81,7 @@ class JsonRpcRepresentation implements Contracts\DataRepresentation
         return (
             isset($this->data['params'])
             &&
-            isset($this-data['id'])
+            isset($this->data['id'])
             &&
             isset($this->data['method'])
         );

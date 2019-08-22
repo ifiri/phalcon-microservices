@@ -5,8 +5,14 @@ services:
     ports: 
       - 80:80
     links:
-      - "users"
+      - 'users'
+
+    # Use it only for dev purposes
+    # volumes:
+    #   - './site/data:/var/www/html'
   users:
     build: './users'
-    expose:
-      - 8000
+    
+    # Use it only for dev purposes
+    # volumes:
+    #  - './users/data:/var/www/html'
